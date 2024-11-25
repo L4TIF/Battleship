@@ -1,3 +1,4 @@
+
 import Ship from "./ship";
 
 class GameBoard {
@@ -59,15 +60,18 @@ class GameBoard {
     }
 
 
-    placeShip(shipObject, [i, j], axis) {
-        if (!this.#isValidCoordinates(shipObject.shipLength, [i, j], axis)) return false;
-
-        for (let index = 0; index < shipObject.shipLength; index++) {
-            this.board[i][j] = { hit: false, ship: shipObject }
-            axis === 'x' ? j++ : i++; //increace column if x axis and row if y axis
+    placeShip(row, col, shipLength, axis) {
+        const success = this.player.GameBoard.placeShip({ shipLength }, [row, col], axis);
+    
+        if (success) {
+            console.log(`Ship placed at (${row}, ${col})`);
+            this.dom.renderGameBoard(this.player.GameBoard, "playerBoard");
+        } else {
+            alert("Invalid ship placement. Try again.");
         }
-        return true;
     }
+    
+    
 
     receiveAttack([i, j]) {
         if (!this.#isCoordinatesExist([i, j])) return

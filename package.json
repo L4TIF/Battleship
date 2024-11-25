@@ -2,6 +2,7 @@
   "name": "webpack-template",
   "version": "1.0.0",
   "main": "index.js",
+  
   "scripts": {
     "test": "jest --watchAll --verbose tests/ *test.js",
     "build": "webpack --config webpack.prod.js",
