@@ -1,23 +1,23 @@
 class Ship {
-    #hit = 0;
-    constructor(shipLength) {
-        this.shipLength = shipLength;
-    }
+  constructor(length) {
+      this.length = length;
+      this.hits = Array(length).fill(false);  // Keep track of hits on the ship
+  }
 
-   get hits() { //get total hits
-        return this.#hit
-    }
+  hit() {
+      // Mark the ship as hit at the first available spot
+      for (let i = 0; i < this.length; i++) {
+          if (!this.hits[i]) {
+              this.hits[i] = true;
+              break;
+          }
+      }
+  }
 
-    hit() { //increases hit count
-        if (this.#hit < this.shipLength)
-            this.#hit += 1;
-    }
-
-    isSunk() {
-        if (this.#hit === this.shipLength)
-            return true;
-        return false;
-    }
+  isSunk() {
+      // Check if all parts of the ship are hit
+      return this.hits.every(hit => hit);
+  }
 }
 
 export default Ship;

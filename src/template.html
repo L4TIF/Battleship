@@ -7,14 +7,40 @@
     <link rel="stylesheet" href="./styles/style.css">
 </head>
 <body>
-  <div class="game-container">
-      <h1>Battleship Game</h1>
-      <div class="controls">
-          <button id="axis-toggle" class="btn">Toggle Axis</button>
-      </div>
-      <div id="board" class="board"></div>
-  </div>
+    <header>
+        <h1>Battleship</h1>
+    </header>
+    
+    <main>
+        <!-- Ship Placement Phase -->
+        <section id="placement-phase">
+            <h2>Place Your Ships</h2>
+            <button id="axis-toggle">Axis: Horizontal</button>
+            <div id="player-board" class="board"></div>
+            <button id="start-game" style="display: none;">Start Game</button>
+        </section>
 
-  <!-- <script src="dist/main.js"></script> -->
+        <!-- Game Phase -->
+        <section id="game-phase" style="display: none;">
+            <h2>Battleship Game</h2>
+            <div class="game-boards">
+                <div>
+                    <h3>Your Board</h3>
+                    <div id="player-game-board" class="board"></div>
+                </div>
+                <div>
+                    <h3>Opponent's Board</h3>
+                    <div id="computer-board" class="board"></div>
+                </div>
+            </div>
+            <p id="game-status">Game Status: Waiting for your move.</p>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Made with ❤️</p>
+    </footer>
+
+    <!-- <script src="./dist/bundle.js"></script> -->
 </body>
 </html>

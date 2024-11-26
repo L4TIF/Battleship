@@ -1,91 +1,195 @@
-/* Basic Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* General styles */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
-.game-container {
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-size: 1.5em;
+    letter-spacing: 1px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    margin-top: auto;
+}
+
+main {
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+}
+
+h1, h2, h3 {
+    margin: 10px 0;
     text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
 }
 
-h1 {
-    margin-bottom: 20px;
-}
-
-.controls {
-    margin-bottom: 20px;
-}
-
-.btn {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
+button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
+    margin: 10px 0;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
     border-radius: 5px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.btn:hover {
-    background-color: #45a049;
+button:hover {
+    background-color: #0056b3;
+    transform: scale(1.1); /* Slightly enlarges the button on hover */
 }
 
+button:active {
+    transform: scale(1); /* Reset button size when clicked */
+}
+
+/* Board styles */
 .board {
     display: grid;
-    grid-template-columns: repeat(10, 50px);
-    grid-template-rows: repeat(10, 50px);
-    gap: 2px;
-    margin-top: 20px;
-    position: relative;
+    grid-template-rows: repeat(10, 30px);
+    grid-template-columns: repeat(10, 30px);
+    gap: 1px;
+    margin: 20px auto;
+    background-color: #000;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .board-cell {
-    width: 50px;
-    height: 50px;
-    background-color: #e4e4e4;
-    border: 1px solid #ccc;
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: background-color 0.2s;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s, transform 0.2s;
+    border-radius: 5px; /* Rounded corners for cells */
 }
 
 .board-cell:hover {
-    background-color: #c7c7c7;
+    background-color: rgba(0, 0, 255, 0.2);
+    transform: scale(1.1); /* Slightly enlarges cell on hover */
 }
 
-.ship-placed {
-    background-color: #3a76ff;
+/* Ship styles */
+.board-cell.ship {
+    background-color: lightgray;
 }
 
-.ship-preview {
+.board-cell.hit {
+    background-color: red;
+    color: #fff;
+    box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.5);
+}
+
+.board-cell.miss {
+    background-color: blue;
+    color: #fff;
+    box-shadow: 0 0 5px 2px rgba(0, 0, 255, 0.5);
+}
+
+.board-cell.preview {
+    background-color: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 5px 2px rgba(0, 255, 0, 0.5);
+}
+
+.board-cell.sunk {
+    background-color: darkred;
+    color: #fff;
+    box-shadow: 0 0 5px 2px rgba(139, 0, 0, 0.5);
+}
+
+/* Additional styling for the game boards container */
+.game-boards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+/* Axis toggle button styling */
+#axis-toggle {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#axis-toggle:hover {
+    background-color: #218838;
+}
+
+/* Start Game button styling */
+#start-game {
+    display: none; /* Initially hidden until all ships are placed */
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#start-game:hover {
+    background-color: #c82333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .board {
+        grid-template-rows: repeat(10, 25px);
+        grid-template-columns: repeat(10, 25px);
+    }
+
+    .board-cell {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+/* Ship cell styles */
+.board-cell.ship-cell {
+    background-color: lightgray;  /* Base color for ship cells */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);  /* Slight inner shadow for depth */
+    position: relative;
+    cursor:not-allowed;
+}
+
+/* Optional: Additional ship-related styles (e.g., ship parts) */
+.board-cell.ship-cell::after {
+    content: ''; /* Create a pseudo-element for extra styling */
     position: absolute;
-    background-color: rgba(0, 255, 0, 0.4);
-    border: 2px solid #3a76ff;
-    pointer-events: none;
-}
-
-.ship-preview.valid {
-    background-color: rgba(0, 255, 0, 0.4);
-}
-
-.ship-preview.invalid {
-    background-color: rgba(255, 0, 0, 0.4);
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 80%;
+    background-color: rgba(0, 0, 0, 0.1);  /* A subtle highlight for the ship part */
+    border-radius: 50%; /* Make the inner highlight circular */
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* Ensure this does not interfere with clicks */
+  
 }

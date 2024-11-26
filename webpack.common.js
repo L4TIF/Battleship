@@ -33,6 +33,16 @@ module.exports = {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: "asset/resource",
             },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                },
+            },
         ],
+    },
+    resolve: {
+        extensions: ['.js'], // This tells Webpack to resolve .js files
     },
 };

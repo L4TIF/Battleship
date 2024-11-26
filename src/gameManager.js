@@ -1,57 +1,121 @@
-// GameManager.js
+import DOM from './dom';
+import GameBoard from './gameboard';
+import Player from './player';
+// GameManager class
 
-export default class GameManager {
-    constructor() {
-        this.board = Array(10).fill().map(() => Array(10).fill(null));  // Initialize an empty board
-        this.ships = [
-            { name: 'Carrier', size: 5 },
-            { name: 'Battleship', size: 4 },
-            { name: 'Cruiser', size: 3 },
-            { name: 'Submarine', size: 3 },
-            { name: 'Destroyer', size: 2 },
-        ];  // Ships with different sizes
-        this.currentShipIndex = 0;  // Start with the first ship
-        this.axis = 'horizontal'; // Default axis is horizontal
+class GameManager {
+  constructor() {
+    this.player = new Player('Player 1');
+    this.computer = new Player('Computer', true);
+
+    this.playerBoard = new GameBoard();
+    this.computerBoard = new GameBoard();
+
+    this.currentShipIndex = 0;
+    this.shipsToPlace = [5, 4, 3, 3, 2]; // Ship lengths
+
+    this.isPlayerTurn = true; // Start with player turn
+  }
+
+  // Place a ship on the board
+  placeShipInBoard(board, row, col, length, axis) {
+    return board.placeShip(row, col, length, axis);
+  }
+
+  // Handle the player's attack on the computer's board
+  attackOpponent(row, col) {
+    return this.computerBoard.receiveAttack(row, col);
+  }
+
+  // Handle the computer's turn
+  computerTurn() {
+    console.log("Computer's turn");  // Debugging line
+    // Add a delay to simulate thinking
+    setTimeout(() => {
+      const [row, col] = this.computer.randomAttack(this.playerBoard.board);
+      const result = this.player.board.receiveAttack(row, col);
+
+      // Update game status based on result
+      const statusElement = document.getElementById('game-status');
+      if (result === 'hit') {
+        statusElement.textContent = 'Computer hit your ship!';
+      } else if (result === 'miss') {
+        statusElement.textContent = 'Computer missed!';
+      } else if (result === 'sunk') {
+        statusElement.textContent = 'Computer sunk your ship!';
+      }
+
+      this.isPlayerTurn = true; // After computer's turn, it's now the player's turn
+      this.updateTurn(); // Update the turn indicator
+      this.updateGameBoard(); // Update the board display after the computer's turn
+      return result;
+    }, 1000);  // Delay of 1 second
+  }
+
+  // Function to update the game UI or status for turn switching
+  updateTurn() {
+    console.log('turn ', this.isPlayerTurn);
+    
+    const statusElement = document.getElementById('game-status');
+    if (this.isPlayerTurn) {
+      statusElement.textContent = 'Your turn!';
+      this.enablePlayerBoard(); // Enable player's interaction
+    } else {
+      statusElement.textContent = 'Computer\'s turn!';
+      this.disablePlayerBoard(); // Disable player's interaction during computer turn
+    }
+  }
+
+  // Enable the player to make moves
+  enablePlayerBoard() {
+    const playerBoard = document.getElementById('player-game-board');
+    playerBoard.addEventListener('click', this.handlePlayerAttack.bind(this));
+  }
+
+  // Disable the player from making moves
+  disablePlayerBoard() {
+    const playerBoard = document.getElementById('player-game-board');
+    playerBoard.removeEventListener('click', this.handlePlayerAttack.bind(this));
+  }
+
+  // Handle player attack logic
+  handlePlayerAttack(event) {
+    if (!this.isPlayerTurn) return; // Ensure it’s the player's turn
+    console.log('handlePlayerAttack');
+    
+    const cell = event.target;
+    const row = parseInt(cell.getAttribute('data-row'));
+    const col = parseInt(cell.getAttribute('data-col'));
+
+    const result = this.attackOpponent(row, col);
+
+    // Update the board with the attack result (hit, miss, or sunk)
+    this.updateGameBoard();
+
+    const statusElement = document.getElementById('game-status');
+    if (result === 'hit') {
+      statusElement.textContent = 'You hit a ship!';
+    } else if (result === 'miss') {
+      statusElement.textContent = 'You missed!';
+    } else if (result === 'sunk') {
+      statusElement.textContent = 'You sunk a ship!';
     }
 
-    // Function to toggle the axis
-    toggleAxis() {
-        this.axis = this.axis === 'horizontal' ? 'vertical' : 'horizontal';
-    }
+    this.isPlayerTurn = false; // After the player’s attack, it’s now the computer’s turn
+    this.updateTurn();
+    this.computerTurn(); // Call computer's turn after the player’s attack
+  }
 
-    // Place ships on the board
-    placeShip(row, col, length, axis) {
-        if (axis === 'horizontal') {
-            if (col + length > 10) return false; // Ship goes off the board
-            for (let i = 0; i < length; i++) {
-                if (this.board[row][col + i] !== null) return false; // Cell is already occupied
-            }
-            for (let i = 0; i < length; i++) {
-                this.board[row][col + i] = 'ship'; // Mark cells with the ship
-            }
-        } else {  // Vertical
-            if (row + length > 10) return false; // Ship goes off the board
-            for (let i = 0; i < length; i++) {
-                if (this.board[row + i][col] !== null) return false; // Cell is already occupied
-            }
-            for (let i = 0; i < length; i++) {
-                this.board[row + i][col] = 'ship'; // Mark cells with the ship
-            }
-        }
-        return true;
-    }
+  // Update the game board UI or internal state
+  updateGameBoard() {
+    const dom = new DOM(this); // Ensure the DOM instance is properly passed with the current GameManager context
+    console.log("Updating game board...");  // Debugging line
+    // Update the player board
+    dom.renderPlayerGameBoard();
 
-    // Get the current ship
-    getCurrentShip() {
-        return this.ships[this.currentShipIndex];
-    }
-
-    // Move to the next ship in the list
-    nextShip() {
-        if (this.currentShipIndex < this.ships.length - 1) {
-            this.currentShipIndex++;
-        } else {
-            alert('All ships placed!');
-        }
-    }
+    // Update the computer board
+    dom.renderComputerGameBoard();
+  }
 }
+
+export default GameManager;
