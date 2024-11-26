@@ -8,8 +8,8 @@ class GameManager {
     this.player = new Player('Player 1');
     this.computer = new Player('Computer', true);
 
-    this.playerBoard = new GameBoard();
-    this.computerBoard = new GameBoard();
+    // this.playerBoard = new GameBoard();
+    // this.computerBoard = new GameBoard();
 
     this.currentShipIndex = 0;
     this.shipsToPlace = [5, 4, 3, 3, 2]; // Ship lengths
@@ -24,7 +24,7 @@ class GameManager {
 
   // Handle the player's attack on the computer's board
   attackOpponent(row, col) {
-    return this.computerBoard.receiveAttack(row, col);
+    return this.computer.board.receiveAttack(row, col);
   }
 
   // Handle the computer's turn
@@ -32,7 +32,7 @@ class GameManager {
     console.log("Computer's turn");  // Debugging line
     // Add a delay to simulate thinking
     setTimeout(() => {
-      const [row, col] = this.computer.randomAttack(this.playerBoard.board);
+      const [row, col] = this.computer.randomAttack(this.player.board.board);
       const result = this.player.board.receiveAttack(row, col);
 
       // Update game status based on result

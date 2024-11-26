@@ -147,21 +147,21 @@ class DOM {
     console.log(this.gameManager.computerBoard); // Check the computer board state
 
     // Ensure both boards are properly initialized before rendering
-    if (!this.gameManager.playerBoard || !Array.isArray(this.gameManager.playerBoard.board) ||
-      !this.gameManager.computerBoard || !Array.isArray(this.gameManager.computerBoard.board)) {
+    if (!this.gameManager.player.board.board || !Array.isArray(this.gameManager.player.board.board) ||
+      !this.gameManager.computer.board.board || !Array.isArray(this.gameManager.computer.board.board)) {
       console.error('Board is not properly initialized');
       return;
     }
 
     // Render the player board
-    this.renderBoard(playerBoard, this.gameManager.playerBoard.board);
+    this.renderBoard(playerBoard, this.gameManager.player.board.board);
 
     // Render the computer board
-    this.renderBoard(computerBoard, this.gameManager.computerBoard.board, (row, col) => {
+    this.renderBoard(computerBoard, this.gameManager.computer.board.board, (row, col) => {
       const result = this.gameManager.attackOpponent(row, col);  // Attack the computer's board
 
       // Update the board rendering after the attack
-      this.updateBoard(computerBoard, this.gameManager.computerBoard.board);
+      this.updateBoard(computerBoard, this.gameManager.computer.board.board);
 
       // Display the result of the attack
       if (result === 'hit') {
@@ -250,7 +250,7 @@ class DOM {
       const result = this.gameManager.attackOpponent(row, col);  // Attack the computer's board
 
       // Update the board rendering after the attack
-      this.updateBoard(computerBoard, this.gameManager.computerBoard.board);
+      this.updateBoard(computerBoard, this.gameManager.computer.board.board);
 
       // Display the result of the attack
       if (result === 'hit') {
@@ -276,7 +276,7 @@ class DOM {
   renderComputerGameBoard() {
     const boardElement = document.querySelector('#computer-board');
     console.log("updating computer board ....");
-    this.updateGameBoard(this.gameManager.computerBoard.board, boardElement); // Update computer board
+    this.updateGameBoard(this.gameManager.computer.board.board, boardElement); // Update computer board
   }
 
 }
