@@ -45,11 +45,16 @@ class GameManager {
       } else if (result === 'sunk') {
         statusElement.textContent = 'Computer sunk your ship!';
       }
-
+      if (this.player.board.areAllShipsSunk()) {
+        this.dom.disableGameBoard();
+        this.dom.showNewGameButton();
+        statusElement.textContent = 'Computer wins!';
+      }
       this.isPlayerTurn = true; // After computer's turn, it's now the player's turn
       this.updateTurn(); // Update the turn indicator
       this.updateGameBoard(); // Update the board display after the computer's turn
       return result;
+
     }, 1000);  // Delay of 1 second
   }
 
@@ -125,11 +130,7 @@ class GameManager {
 
     // Call computer's turn
     this.computerTurn();
-    if (this.player.board.areAllShipsSunk()) {
-      this.dom.disableGameBoard();
-      this.dom.showNewGameButton();
-      statusElement.textContent = 'Computer wins!';
-    }
+
   }
 
   // Update the game board UI or internal state
