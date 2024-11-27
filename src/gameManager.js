@@ -7,9 +7,9 @@ class GameManager {
   constructor() {
     this.player = new Player('Player 1');
     this.computer = new Player('Computer', true);
+    this.emptyComputerBoard = new GameBoard();
+    this.dom = new DOM(this); // Ensure DOM instance is created
 
-    // this.playerBoard = new GameBoard();
-    // this.computerBoard = new GameBoard();
 
     this.currentShipIndex = 0;
     this.shipsToPlace = [5, 4, 3, 3, 2]; // Ship lengths
@@ -24,6 +24,7 @@ class GameManager {
 
   // Handle the player's attack on the computer's board
   attackOpponent(row, col) {
+    this.emptyComputerBoard.receiveAttack(row, col, this.computer.board.board, true);
     return this.computer.board.receiveAttack(row, col);
   }
 
@@ -54,22 +55,24 @@ class GameManager {
 
   // Function to update the game UI or status for turn switching
   updateTurn() {
+
     console.log('turn player', this.isPlayerTurn);
-    
-    const statusElement = document.getElementById('game-status');
-    if (this.isPlayerTurn) {
-      statusElement.textContent = 'Your turn!';
-      this.enablePlayerBoard(); // Enable player's interaction
-    } else {
-      statusElement.textContent = 'Computer\'s turn!';
-      this.disablePlayerBoard(); // Disable player's interaction during computer turn
-    }
+    setTimeout(() => {
+      const statusElement = document.getElementById('game-status');
+      if (this.isPlayerTurn) {
+        statusElement.textContent = 'Your turn!';
+        this.enablePlayerBoard(); // Enable player's interaction
+      } else {
+        statusElement.textContent = 'Computer\'s turn!';
+        this.disablePlayerBoard(); // Disable player's interaction during computer turn
+      }
+    }, 1000);
   }
 
   // Enable the player to make moves
   enablePlayerBoard() {
     console.log('player board enabled');
-    
+
     const playerBoard = document.getElementById('player-game-board');
     playerBoard.addEventListener('click', this.handlePlayerAttack.bind(this));
   }
@@ -82,17 +85,15 @@ class GameManager {
   }
 
   // Handle player attack logic
-  handlePlayerAttack(event) {
+  handlePlayerAttack({ row, col }) {
     if (!this.isPlayerTurn) return; // Ensure it’s the player's turn
     console.log('handlePlayerAttack');
-    
-    const cell = event.target;
-    const row = parseInt(cell.getAttribute('data-row'));
-    const col = parseInt(cell.getAttribute('data-col'));
+
+
 
     const result = this.attackOpponent(row, col);
     console.log(result);
-    
+
 
     if (result === 'already_attacked') {
       const statusElement = document.getElementById('game-status');
@@ -112,9 +113,23 @@ class GameManager {
       statusElement.textContent = 'You sunk a ship!';
     }
 
-    this.isPlayerTurn = false; // After the player’s attack, it’s now the computer’s turn
+    if (this.computer.board.areAllShipsSunk()) {
+      this.dom.disableGameBoard();
+      this.dom.showNewGameButton();
+      statusElement.textContent = 'You win!';
+      return;
+    }
+
+    this.isPlayerTurn = false;
     this.updateTurn();
-    this.computerTurn(); // Call computer's turn after the player’s attack
+
+    // Call computer's turn
+    this.computerTurn();
+    if (this.player.board.areAllShipsSunk()) {
+      this.dom.disableGameBoard();
+      this.dom.showNewGameButton();
+      statusElement.textContent = 'Computer wins!';
+    }
   }
 
   // Update the game board UI or internal state

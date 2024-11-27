@@ -2,11 +2,11 @@ import Ship from './ship';
 
 class GameBoard {
     constructor() {
-      this.board = Array(10).fill(null).map(() => Array(10).fill(null));
+        this.board = Array(10).fill(null).map(() => Array(10).fill(null));
         this.ships = [];
     }
 
-   // Method to place a ship on the board
+    // Method to place a ship on the board
     placeShip(row, col, length, axis) {
         // Check if placement is valid
         if (axis === 'horizontal') {
@@ -35,23 +35,40 @@ class GameBoard {
         return true;  // Successfully placed the ship
     }
 
-    receiveAttack(row, col) {
+    receiveAttack(row, col, computerBoard = null, isEmptyBoard = false) {
         const cell = this.board[row][col];
-      
+
         if (cell === 'hit' || cell === 'miss') {
-          return 'already_attacked'; // Indicate the cell was already attacked
+            return 'already_attacked'; // Indicate the cell was already attacked
         }
-      
+
+        if (isEmptyBoard) {
+            const computerBoardCell = computerBoard[row][col];
+            if (computerBoardCell instanceof Ship) {
+                this.board[row][col] = 'hit';
+            } else
+                this.board[row][col] = 'miss';
+            return
+        }
+
+
         if (cell instanceof Ship) {
-          cell.hit();
-          this.board[row][col] = 'hit';
-          return cell.isSunk() ? 'sunk' : 'hit';
+            this.board[row][col] = 'hit';
+            cell.hit();
+            return cell.isSunk() ? 'sunk' : 'hit';
         } else {
-          this.board[row][col] = 'miss';
-          return 'miss';
+            this.board[row][col] = 'miss';
+            return 'miss';
         }
-      }
-      
+    }
+
+    areAllShipsSunk() {
+        return this.board.every(row =>
+            row.every(cell => !(cell instanceof Ship) || cell.isSunk())
+        );
+    }
+
+
 }
 
 export default GameBoard;

@@ -1,3 +1,4 @@
+import GameBoard from "./gameboard";
 import Ship from "./ship";
 
 class DOM {
@@ -5,6 +6,9 @@ class DOM {
     this.gameManager = gameManager;
     this.axis = 'horizontal'; // Default axis for ship placement
     this.currentPreview = null; // Track preview element
+    // Create an empty board for the player to attack
+
+
   }
 
   init() {
@@ -142,9 +146,6 @@ class DOM {
     const playerBoard = document.getElementById('player-game-board');
     const computerBoard = document.getElementById('computer-board');
 
-    // Log player and computer boards for debugging
-    console.log(this.gameManager.playerBoard);  // Check the player board state
-    console.log(this.gameManager.computerBoard); // Check the computer board state
 
     // Ensure both boards are properly initialized before rendering
     if (!this.gameManager.player.board.board || !Array.isArray(this.gameManager.player.board.board) ||
@@ -156,22 +157,13 @@ class DOM {
     // Render the player board
     this.renderBoard(playerBoard, this.gameManager.player.board.board);
 
+
+
     // Render the computer board
-    this.renderBoard(computerBoard, this.gameManager.computer.board.board, (row, col) => {
-      const result = this.gameManager.attackOpponent(row, col);  // Attack the computer's board
+    this.renderBoard(computerBoard, this.gameManager.emptyComputerBoard.board, (row, col) => {
 
-      // Update the board rendering after the attack
-      this.updateBoard(computerBoard, this.gameManager.computer.board.board);
 
-      // Display the result of the attack
-      if (result === 'hit') {
-        document.getElementById('game-status').textContent = 'You hit a ship!';
-      } else if (result === 'miss') {
-        document.getElementById('game-status').textContent = 'You missed!';
-      }
-
-      // Call computer's turn after the player attack
-      this.computerTurn();  // Let the computer take its turn
+      this.gameManager.handlePlayerAttack({ row, col })
     });
   }
 
@@ -243,24 +235,10 @@ class DOM {
   }
 
   updateGameBoard(board, boardElement) {
-    console.log('calling render board ', board, boardElement);
-    const computerBoard = document.getElementById('computer-board');
 
     this.renderBoard(boardElement, board, (row, col) => {
-      const result = this.gameManager.attackOpponent(row, col);  // Attack the computer's board
 
-      // Update the board rendering after the attack
-      this.updateBoard(computerBoard, this.gameManager.computer.board.board);
-
-      // Display the result of the attack
-      if (result === 'hit') {
-        document.getElementById('game-status').textContent = 'You hit a ship!';
-      } else if (result === 'miss') {
-        document.getElementById('game-status').textContent = 'You missed!';
-      }
-
-      // Call computer's turn after the player attack
-      this.computerTurn();  // Let the computer take its turn
+      this.gameManager.handlePlayerAttack({ row, col })
     });
   }
 
@@ -268,16 +246,56 @@ class DOM {
   // Call this function whenever the board state changes
   renderPlayerGameBoard() {
     const boardElement = document.querySelector('#player-game-board');
-    console.log("updating player board ....");
+
 
     this.updateGameBoard(this.gameManager.player.board.board, boardElement); // Update player board
   }
 
   renderComputerGameBoard() {
     const boardElement = document.querySelector('#computer-board');
-    console.log("updating computer board ....");
-    this.updateGameBoard(this.gameManager.computer.board.board, boardElement); // Update computer board
+    console.log('empty board');
+    
+    console.table( this.gameManager.emptyComputerBoard.board);
+    console.log('computer board');
+    console.table( this.gameManager.computer.board.board);
+
+
+
+    this.updateGameBoard(this.gameManager.emptyComputerBoard.board, boardElement); // Update computer board
   }
+
+  showNewGameButton() {
+    const container = document.getElementById('game-phase'); // Assume the game is wrapped in a container div
+
+    // Create the button
+    const newGameButton = document.createElement('button');
+    newGameButton.id = 'new-game-button';
+    newGameButton.textContent = 'New Game';
+    newGameButton.classList.add('new-game-button'); // Optional: add CSS class for styling
+
+    // Attach event listener to restart the game
+    newGameButton.addEventListener('click', () => {
+      window.location.reload(); // Simple refresh to reset the game state
+    });
+
+    // Append the button to the container
+    container.appendChild(newGameButton);
+  }
+  disableGameBoard() {
+    const playerBoard = document.getElementById('player-game-board');
+    const computerBoard = document.getElementById('computer-board');
+
+    // Clone the boards to remove all event listeners
+    const playerBoardClone = playerBoard.cloneNode(true);
+    const computerBoardClone = computerBoard.cloneNode(true);
+
+    // Replace the old boards with the clones
+    playerBoard.replaceWith(playerBoardClone);
+    computerBoard.replaceWith(computerBoardClone);
+  }
+
+
+
 
 }
 
