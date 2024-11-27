@@ -169,6 +169,9 @@ button:active {
         width: 25px;
         height: 25px;
     }
+    .game-boards{
+        display: block;
+    }
 }
 
 /* Ship cell styles */
