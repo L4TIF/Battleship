@@ -54,7 +54,7 @@ class GameManager {
 
   // Function to update the game UI or status for turn switching
   updateTurn() {
-    console.log('turn ', this.isPlayerTurn);
+    console.log('turn player', this.isPlayerTurn);
     
     const statusElement = document.getElementById('game-status');
     if (this.isPlayerTurn) {
@@ -68,12 +68,15 @@ class GameManager {
 
   // Enable the player to make moves
   enablePlayerBoard() {
+    console.log('player board enabled');
+    
     const playerBoard = document.getElementById('player-game-board');
     playerBoard.addEventListener('click', this.handlePlayerAttack.bind(this));
   }
 
   // Disable the player from making moves
   disablePlayerBoard() {
+    console.log('player board disabled');
     const playerBoard = document.getElementById('player-game-board');
     playerBoard.removeEventListener('click', this.handlePlayerAttack.bind(this));
   }
@@ -88,6 +91,14 @@ class GameManager {
     const col = parseInt(cell.getAttribute('data-col'));
 
     const result = this.attackOpponent(row, col);
+    console.log(result);
+    
+
+    if (result === 'already_attacked') {
+      const statusElement = document.getElementById('game-status');
+      statusElement.textContent = 'You already attacked this cell!';
+      return; // Prevent further action on this turn
+    }
 
     // Update the board with the attack result (hit, miss, or sunk)
     this.updateGameBoard();

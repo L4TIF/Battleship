@@ -36,22 +36,22 @@ class GameBoard {
     }
 
     receiveAttack(row, col) {
-      const cell = this.board[row][col];
-
-      if (cell === null) {
-          this.board[row][col] = 'miss';  // Mark as miss if it's an empty cell
+        const cell = this.board[row][col];
+      
+        if (cell === 'hit' || cell === 'miss') {
+          return 'already_attacked'; // Indicate the cell was already attacked
+        }
+      
+        if (cell instanceof Ship) {
+          cell.hit();
+          this.board[row][col] = 'hit';
+          return cell.isSunk() ? 'sunk' : 'hit';
+        } else {
+          this.board[row][col] = 'miss';
           return 'miss';
-      } else if (cell instanceof Ship) {
-          cell.hit();  // Mark ship as hit
-          if (cell.isSunk()) {
-              this.board[row][col] = 'sunk';  // Mark as sunk if the ship is sunk
-              return 'sunk';
-          }
-          this.board[row][col] = 'hit';  // Otherwise mark as hit
-          return 'hit';
+        }
       }
-      return null;  // Cell already attacked
-  }
+      
 }
 
 export default GameBoard;
